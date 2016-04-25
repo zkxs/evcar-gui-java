@@ -25,7 +25,7 @@ public class Histogram extends Canvas implements DataReceiver
 {
 	private static final long serialVersionUID = 0L;
 	
-	private final static int DATA_POINT_WIDTH = 25;
+	private final static int DATA_POINT_WIDTH = 1;
 	
 	private final static int Y_AXIS_LABEL_WIDTH = 75; // width of y-axis's reserved drawing area
 	private final static int Y_AXIS_WIDTH = 2; // width of y-axis
@@ -36,7 +36,7 @@ public class Histogram extends Canvas implements DataReceiver
 	private final static boolean DRAW_Y_AXIS_LABEL_BOUNDING_BOXES = false;
 	
 	// I assume this value cannot change
-	private final static int MAX_DATA_POINTS = Toolkit.getDefaultToolkit().getScreenSize().width;
+	private final static int MAX_DATA_POINTS = Toolkit.getDefaultToolkit().getScreenSize().width / DATA_POINT_WIDTH;
 	
 	private LinkedList<DataPoint> dataPoints = new LinkedList<>();
 	private Queue<DataPoint> newDataQueue = new ConcurrentLinkedQueue<>();
@@ -48,6 +48,15 @@ public class Histogram extends Canvas implements DataReceiver
 	{
 		this.gaugeParameters = gaugeParameters;
 		dataColor = gaugeParameters.getColor();
+	}
+	
+	@Override
+	public void update(Graphics g)
+	{
+		/* This magically fixes flickering. AWT is trying to be smart, but it is too smart for its
+		 * own good. If you don't override this method AWT will clear the screen in a non-double buffered way.
+		 */
+		paint(g);
 	}
 	
 	@Override
@@ -148,7 +157,7 @@ public class Histogram extends Canvas implements DataReceiver
 				yNewer = getYCoordinate(dpNewer, maxY, minValue, maxValue);
 				
 				poly.addPoint(xNewer, height);
-				poly.addPoint(xOlder + 1, height);
+				poly.addPoint(xOlder + 1, height); // +1 required because fillPolygon is for some reason smaller than drawPolygon
 				poly.addPoint(xOlder + 1, yOlder);
 				poly.addPoint(xNewer, yNewer);
 				

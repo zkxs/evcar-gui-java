@@ -24,6 +24,9 @@ import com.github.zkxs.evcar.gui.*;
 
 public class Driver
 {	
+	/** Time in ms between updates of GUI components */
+	private static final long UPDATE_PERIOD = 17; // this is roughly 60 FPS
+	
 	public static final String VERSION_NUMBER = "0.0.0";
 	public static final String APPLICATION_NAME = "Electric Vehicle Demonstrator";
 	private static final String WINDOW_TITLE = APPLICATION_NAME + " v" + VERSION_NUMBER;
@@ -91,7 +94,7 @@ public class Driver
 						{
 							dataProvider.dispatchData();
 						}
-					}, 0, 1000);
+					}, 0, UPDATE_PERIOD);
 					
 					frame = getNewFrame(isFullscreen);
 				}
