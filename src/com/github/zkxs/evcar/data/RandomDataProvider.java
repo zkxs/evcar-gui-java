@@ -27,8 +27,6 @@ public class RandomDataProvider extends DataProvider
 			if (rpm < 2000) drpm += 1;
 			if (rpm < 1000) drpm += 3;
 			if (rpm < 100 ) drpm += 9;
-			
-			System.out.println(drpm);
 		}
 		
 		
