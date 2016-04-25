@@ -6,9 +6,9 @@ public class GaugeParameters
 {	
 	// declare different types of gauges
 	public static final GaugeParameters
-		CURRENT_GAGUE_PARAMETERS = new GaugeParameters(0, 100, dp -> dp.getCurrent()),
-		VOLTAGE_GAGUE_PARAMETERS = new GaugeParameters(0, 100, dp -> dp.getVoltage()),
-		RPM_GAGUE_PARAMETERS     = new GaugeParameters(0, 100, dp -> dp.getRpm());
+		CURRENT_GAGUE_PARAMETERS = new GaugeParameters(-30, 120, dp -> dp.getCurrent()),
+		VOLTAGE_GAGUE_PARAMETERS = new GaugeParameters(0, 72, dp -> dp.getVoltage()),
+		RPM_GAGUE_PARAMETERS     = new GaugeParameters(-500, 4500, dp -> dp.getRpm());
 	
 	/** Method by which value is gotten */
 	@FunctionalInterface

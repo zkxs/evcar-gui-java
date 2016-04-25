@@ -1,11 +1,13 @@
 package com.github.zkxs.evcar.gui;
 
+import java.awt.BasicStroke;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.RenderingHints;
+import java.awt.Stroke;
 import java.awt.Toolkit;
 import java.awt.image.BufferStrategy;
 import java.util.LinkedList;
@@ -84,9 +86,6 @@ public class Histogram extends Canvas implements DataReceiver
 		// get the graphic object for the back buffer
 		Graphics2D g = (Graphics2D) bufferStrategy.getDrawGraphics();
 		
-		// enable anti-aliasing
-		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		
 		// actually perform drawing
 		int width = getWidth();
 		int height = getHeight();
@@ -97,44 +96,72 @@ public class Histogram extends Canvas implements DataReceiver
 		 * one unit to the left.
 		 */
 		
-		int x1, x2, y1, y2;
-		DataPoint dp1, dp2;
+		/* here we set up a shifting lens of 2 datapoints. dp1 is on the left, dp2 is on the right.
+		 */
+		DataPoint dpNewer;
+		int xOldest, yOldest, xOlder, yOlder, xNewer, yNewer;
 		
-		x2 = width - 1;
-		x1 = x2 - DATA_POINT_WIDTH;
+		xOlder = width - 1;
+		xNewer = xOlder - DATA_POINT_WIDTH;
+		
+		xOldest = -1;
+		yOlder = -1;
 		
 		ListIterator<DataPoint> iter = dataPoints.listIterator();
 		Polygon poly = new Polygon();
+		boolean oldestValid = false;
 		
-		g.clearRect(0, 0, maxX, maxY);
+		// clear screen
+		g.clearRect(0, 0, width, height);
 		
 		if (iter.hasNext())
 		{
-			dp2 = iter.next();
-			y2 = getYCoordinate(dp2, maxY, maxValue);
-			while (iter.hasNext() && x2 >= 0)
+			dpNewer = iter.next();
+			yNewer = getYCoordinate(dpNewer, maxY, maxValue);
+			while (iter.hasNext() && xOlder >= 0)
 			{
-				dp1 = dp2;
-				dp2 = iter.next();
-				y1 = y2;
-				y2 = getYCoordinate(dp2, maxY, maxValue);
+				dpNewer = iter.next();
+				yOldest = yOlder;
+				yOlder = yNewer;
+				yNewer = getYCoordinate(dpNewer, maxY, maxValue);
 				
-				poly.addPoint(x1, maxY);
-				poly.addPoint(x2, maxY);
-				poly.addPoint(x2, y2);
-				poly.addPoint(x1, y1);
+				poly.addPoint(xNewer, height);
+				poly.addPoint(xOlder + 1, height);
+				poly.addPoint(xOlder + 1, yOlder);
+				poly.addPoint(xNewer, yNewer);
 				
 				// first we draw the area below the trapezoid
-				//g.setColor(Color.DARK_GRAY);
-				g.drawPolygon(poly);
+				g.setColor(Color.DARK_GRAY);
+				g.fillPolygon(poly);
 				poly.reset();
 				
 				// then we draw the top edge of the trapezoid
-				//g.setColor(Color.BLACK);
-				//g.drawLine(x1, y1, x2, y2);
+				if (oldestValid)
+				{
+					g.setColor(Color.BLACK);
+					g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); // enable anti-aliasing
+					Stroke oldStroke = g.getStroke();
+					g.setStroke(new BasicStroke(2));	
+					g.drawLine(xOldest, yOldest, xOlder, yOlder);
+					g.setStroke(oldStroke);
+					g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF); // disable anti-aliasing
+				}
 				
-				x1 -= DATA_POINT_WIDTH;
-				x2 -= DATA_POINT_WIDTH;
+				xOldest = xOlder;
+				xOlder = xNewer;
+				xNewer -= DATA_POINT_WIDTH;
+				oldestValid = true;
+			}
+			
+			if (oldestValid)
+			{
+				g.setColor(Color.BLACK);
+				g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); // enable anti-aliasing
+				Stroke oldStroke = g.getStroke();
+				g.setStroke(new BasicStroke(2));	
+				g.drawLine(xNewer + DATA_POINT_WIDTH, yNewer, xOlder + DATA_POINT_WIDTH, yOlder);
+				g.setStroke(oldStroke);
+				g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF); // disable anti-aliasing
 			}
 		}
 		

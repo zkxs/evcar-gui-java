@@ -2,7 +2,7 @@ package com.github.zkxs.evcar.data;
 
 import java.util.Random;
 
-public class FakeDataProvider extends DataProvider
+public class RandomDataProvider extends DataProvider
 {
 	Random rand = new Random();
 
