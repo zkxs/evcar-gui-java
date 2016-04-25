@@ -35,11 +35,21 @@ public class Driver
 	private Rectangle windowBounds = new Rectangle(100, 100, 450, 300);
 	private Point windowLocation;
 	
+	/**
+	 * Main method (where the program starts)
+	 * @param args Command line arguments
+	 */
 	public static void main(String[] args)
 	{
+		Assets.getFont7seg();
 		new Driver();
 	}
 	
+	/**
+	 * Starting point of the entire application. Intentionally done in instance code in case it is
+	 * useful to have multiple application instances running within one VM (for example, this is
+	 * nice when unit testing)
+	 */
 	public Driver()
 	{
 		// fixes a flickering problem caused by AWT doing things it really doesn't need to
@@ -93,6 +103,9 @@ public class Driver
 		});
 	}
 	
+	/**
+	 * @return A new, empty windowed frame
+	 */
 	private JFrame createWindowedFrame()
 	{
 		JFrame frame = new JFrame(WINDOW_TITLE);
@@ -107,7 +120,9 @@ public class Driver
 		return frame;
 	}
 	
-	
+	/**
+	 * @return A new, empty fullscreen frame
+	 */
 	private JFrame createFullscreenFrame()
 	{
 		assert(monitor == null);
@@ -121,6 +136,9 @@ public class Driver
 		return frame;
 	}
 	
+	/**
+	 * Toggle between windowed and fullscreen modes
+	 */
 	private void toggleFullscreen()
 	{
 		destroyFrame();
@@ -129,6 +147,11 @@ public class Driver
 		frame = getNewFrame(isFullscreen);
 	}
 	
+	/**
+	 * Create a new frame of the appropriate type. Note that this will also set the frame as visible.
+	 * @param isFullscreen whether or not the frame should be fullscreen
+	 * @return The newly constructed frame
+	 */
 	private JFrame getNewFrame(boolean isFullscreen)
 	{
 		JFrame frame;
@@ -149,6 +172,9 @@ public class Driver
 		return frame;
 	}
 	
+	/**
+	 * Destroy the current frame, saving any of its parameters we may need later.
+	 */
 	private void destroyFrame()
 	{
 		if (monitor != null)
