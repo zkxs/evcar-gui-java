@@ -1,0 +1,8 @@
+# eclipse stuff
+/.settings
+/.classpath
+/.project
+
+# binary output
+/bin
+*.class
