@@ -35,7 +35,7 @@ public class Driver
 	private static final Dimension MINIMUM_FRAME_SIZE = new Dimension(300, 500);
 	private Rectangle windowBounds = new Rectangle(100, 100, 1024, 640);
 	
-	public static final String VERSION_NUMBER = "0.1.0";
+	public static final String VERSION_NUMBER = "0.1.1";
 	public static final String APPLICATION_NAME = "Electric Vehicle Demonstrator";
 	private static final String WINDOW_TITLE = APPLICATION_NAME + " v" + VERSION_NUMBER;
 	
