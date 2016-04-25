@@ -11,11 +11,4 @@ public interface DataProvider
 	 * @return Most recent data from provider
 	 */
 	public DataPoint getDataPoint();
-	
-	/**
-	 * Reuses an old DataPoint object
-	 * @param unusedDataPoint the DataPoint to recycle
-	 * @return Most recent data from provider
-	 */
-	public DataPoint getDataPoint(DataPoint unusedDataPoint);
 }
