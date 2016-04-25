@@ -3,6 +3,7 @@ package com.github.zkxs.evcar;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Font;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
@@ -15,8 +16,10 @@ import java.util.TimerTask;
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import com.github.zkxs.evcar.data.*;
@@ -26,6 +29,10 @@ public class Driver
 {	
 	/** Time in ms between updates of GUI components */
 	private static final long UPDATE_PERIOD = 17; // this is roughly 60 FPS
+	private static final Font STRIP_LABEL_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 50);
+	private static final Font GAUGE_LABEL_FONT = Assets.getFont7seg().deriveFont(50f);
+	private static final Dimension MINIMUM_FRAME_SIZE = new Dimension(500, 150);
+	private Rectangle windowBounds = new Rectangle(100, 100, 640, 300);
 	
 	public static final String VERSION_NUMBER = "0.0.0";
 	public static final String APPLICATION_NAME = "Electric Vehicle Demonstrator";
@@ -35,7 +42,6 @@ public class Driver
 	private JPanel contentPane;
 	private GraphicsDevice monitor;
 	private boolean isFullscreen = false;
-	private Rectangle windowBounds = new Rectangle(100, 100, 450, 300);
 	private Point windowLocation;
 	
 	/**
@@ -70,8 +76,8 @@ public class Driver
 					contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 					contentPane.setLayout(new BorderLayout(0, 0));
 					
-					Histogram currentHistogram = new Histogram(GaugeParameters.CURRENT_GAGUE_PARAMETERS);
-					contentPane.add(currentHistogram, BorderLayout.CENTER);
+					JPanel currentPane = createGaugeStrip(dataProvider, GaugeParameters.CURRENT_GAGUE_PARAMETERS);
+					contentPane.add(currentPane, BorderLayout.CENTER);
 					
 					contentPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_F11, 0), "toggleFullscreen");
 					contentPane.getActionMap().put("toggleFullscreen", new AbstractAction() {
@@ -84,7 +90,6 @@ public class Driver
 						}
 					});
 					
-					dataProvider.addListener(currentHistogram);
 					
 					// set up timer to send data points to the various GUI components
 					Timer updateTimer = new Timer("Update Timer");
@@ -106,6 +111,36 @@ public class Driver
 		});
 	}
 	
+	private JPanel createGaugeStrip(DataProvider dp, GaugeParameters gp)
+	{
+		Histogram histogram = new Histogram(gp);
+		dp.addListener(histogram);
+		
+		GaugeLabel gaugeLabel = new GaugeLabel(gp);
+		gaugeLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+		gaugeLabel.setFont(GAUGE_LABEL_FONT);
+		dp.addListener(gaugeLabel);
+		
+		Gauge gauge = new Gauge(gp);
+		dp.addListener(gauge);
+		
+		JLabel stripLabel = new JLabel(gp.getLabel());
+		stripLabel.setFont(STRIP_LABEL_FONT);
+		stripLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		
+		JPanel gaugeBox = new JPanel();
+		gaugeBox.setLayout(new BorderLayout(0, 0));
+		gaugeBox.add(gauge, BorderLayout.CENTER);
+		gaugeBox.add(gaugeLabel, BorderLayout.SOUTH);
+		gaugeBox.add(stripLabel, BorderLayout.NORTH);
+		
+		JPanel gaugeStrip = new JPanel();
+		gaugeStrip.setLayout(new BorderLayout(0, 0));
+		gaugeStrip.add(histogram, BorderLayout.CENTER);
+		gaugeStrip.add(gaugeBox, BorderLayout.WEST);
+		return gaugeStrip;
+	}
+	
 	/**
 	 * @return A new, empty windowed frame
 	 */
@@ -118,7 +153,7 @@ public class Driver
 		{
 			frame.setLocation(windowLocation);
 		}
-		//frame.setMinimumSize(new Dimension(100, 100));
+		frame.setMinimumSize(MINIMUM_FRAME_SIZE);
 		frame.setResizable(true);
 		return frame;
 	}

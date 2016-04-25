@@ -139,7 +139,7 @@ public class Histogram extends Canvas implements DataReceiver
 		boolean oldestValid = false;
 		
 		// clear screen
-		g.clearRect(0, 0, width, height);
+		g.clearRect(0, 0, width, height); //TODO: we don't need to clear the axis part
 		
 		/*------------------------------------------------------------------------------------------
 		 * Draw the histogram itself
