@@ -23,10 +23,9 @@ import com.github.zkxs.evcar.data.DataReceiver;
 
 public class Histogram extends Canvas implements DataReceiver
 {
-	private static final long serialVersionUID = 0L;
+	private static final long serialVersionUID = 1L;
 	
-	private final static int DATA_POINT_WIDTH = 1;
-	
+	private final static int DATA_POINT_WIDTH = 2;
 	private final static int Y_AXIS_LABEL_WIDTH = 75; // width of y-axis's reserved drawing area
 	private final static int Y_AXIS_WIDTH = 2; // width of y-axis
 	private final static int Y_AXIS_TICK_WIDTH = 5; // width of y-axis tickmarks

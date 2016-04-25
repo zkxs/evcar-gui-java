@@ -8,9 +8,9 @@ public class GaugeParameters
 {	
 	// declare different types of gauges
 	public static final GaugeParameters
-		CURRENT_GAGUE_PARAMETERS = new GaugeParameters("Current", "A", 0, 80, dp -> dp.getCurrent(),  new Color(0xFF6666)),
-		VOLTAGE_GAGUE_PARAMETERS = new GaugeParameters("Voltage", "V", 0, 72, dp -> dp.getVoltage(),  new Color(0x66FF66)),
-		RPM_GAGUE_PARAMETERS     = new GaugeParameters("Rotations per Minute", "", -500, 4500, dp -> dp.getRpm(), new Color(0x6666FF));
+		CURRENT_GAGUE_PARAMETERS = new GaugeParameters("Current", "A", "%.1f", 0, 80, dp -> dp.getCurrent(),  new Color(0xFF6666)),
+		VOLTAGE_GAGUE_PARAMETERS = new GaugeParameters("Voltage", "V", "%.1f", 0, 72, dp -> dp.getVoltage(),  new Color(0x66FF66)),
+		RPM_GAGUE_PARAMETERS     = new GaugeParameters("RPM", "", "%.0f", -500, 4500, dp -> dp.getRpm(), new Color(0x6666FF));
 	
 	/** Method by which value is gotten */
 	@FunctionalInterface
@@ -20,14 +20,18 @@ public class GaugeParameters
 	}
 	
 	private String label;
+	private String units;
+	private String numberFormat;
 	private double minimum;
 	private double maximum;
 	private ValueGetter valueGetter;
 	private Color color;
 	
-	private GaugeParameters(String label, String units, double minimum, double maximum, ValueGetter valueGetter, Color color)
+	private GaugeParameters(String label, String units, String numberFormat, double minimum, double maximum, ValueGetter valueGetter, Color color)
 	{
 		this.label = label;
+		this.units = units;
+		this.numberFormat = numberFormat;
 		this.minimum = minimum;
 		this.maximum = maximum;
 		this.valueGetter = valueGetter;
@@ -37,6 +41,16 @@ public class GaugeParameters
 	public String getLabel()
 	{
 		return label;
+	}
+	
+	public String getUnits()
+	{
+		return units;
+	}
+	
+	public String getNumberFormat()
+	{
+		return numberFormat;
 	}
 	
 	/**

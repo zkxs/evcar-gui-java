@@ -6,6 +6,7 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -28,15 +29,21 @@ import com.github.zkxs.evcar.gui.*;
 public class Driver
 {	
 	/** Time in ms between updates of GUI components */
-	private static final long UPDATE_PERIOD = 17; // this is roughly 60 FPS
+	private static final long UPDATE_PERIOD = 50;
 	private static final Font STRIP_LABEL_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 50);
 	private static final Font GAUGE_LABEL_FONT = Assets.getFont7seg().deriveFont(50f);
-	private static final Dimension MINIMUM_FRAME_SIZE = new Dimension(500, 150);
-	private Rectangle windowBounds = new Rectangle(100, 100, 640, 300);
+	private static final Dimension MINIMUM_FRAME_SIZE = new Dimension(300, 500);
+	private Rectangle windowBounds = new Rectangle(100, 100, 640, 640);
 	
 	public static final String VERSION_NUMBER = "0.0.0";
 	public static final String APPLICATION_NAME = "Electric Vehicle Demonstrator";
 	private static final String WINDOW_TITLE = APPLICATION_NAME + " v" + VERSION_NUMBER;
+	
+	private static final GaugeParameters[] stripTypes = {
+		GaugeParameters.CURRENT_GAGUE_PARAMETERS,
+		GaugeParameters.VOLTAGE_GAGUE_PARAMETERS,
+		GaugeParameters.RPM_GAGUE_PARAMETERS
+	};
 	
 	private JFrame frame;
 	private JPanel contentPane;
@@ -74,10 +81,14 @@ public class Driver
 				{
 					contentPane = new JPanel();
 					contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-					contentPane.setLayout(new BorderLayout(0, 0));
+					contentPane.setLayout(new GridLayout(0, 1));
 					
-					JPanel currentPane = createGaugeStrip(dataProvider, GaugeParameters.CURRENT_GAGUE_PARAMETERS);
-					contentPane.add(currentPane, BorderLayout.CENTER);
+					
+					for (GaugeParameters gp : stripTypes)
+					{
+						JPanel currentPane = createGaugeStrip(dataProvider, gp);
+						contentPane.add(currentPane);
+					}
 					
 					contentPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_F11, 0), "toggleFullscreen");
 					contentPane.getActionMap().put("toggleFullscreen", new AbstractAction() {
