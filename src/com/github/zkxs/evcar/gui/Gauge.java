@@ -26,7 +26,10 @@ public class Gauge extends Canvas implements DataReceiver
 	{
 		this.gaugeParameters = gaugeParameters;
 		currentValue = gaugeParameters.getMinimum();
-		needleSpeed = (gaugeParameters.getMaximum() - gaugeParameters.getMinimum()) / 25;
+		
+		// needle can move 1/10th of its range every tick
+		needleSpeed = (gaugeParameters.getMaximum() - gaugeParameters.getMinimum()) / 10;
+		
 		setMinimumSize(new Dimension(200, 100));
 		setPreferredSize(new Dimension(200, 100));
 	}
