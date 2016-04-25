@@ -25,6 +25,8 @@ public class Histogram extends Canvas implements DataReceiver
 	
 	private final static int DATA_POINT_WIDTH = 25;
 	
+	private final static int Y_AXIS_LABEL_WIDTH = 100;
+	
 	// I assume this value cannot change
 	private final static int MAX_DATA_POINTS = Toolkit.getDefaultToolkit().getScreenSize().width;
 	
@@ -43,7 +45,6 @@ public class Histogram extends Canvas implements DataReceiver
 	public void paint(Graphics screen)
 	{
 		// prepare data for drawing
-		double maxValue;
 		{
 			DataPoint dp;
 			while ((dp = newDataQueue.poll()) != null)
@@ -62,16 +63,27 @@ public class Histogram extends Canvas implements DataReceiver
 					dataPoints.removeLast();
 				}
 			}
-			
-			// find maximum value of data
-			Optional<DataPoint> maybeMax = dataPoints.stream().max((a, b) -> Double.compare(gagueParameters.getValue(a), gagueParameters.getValue(b)));
-			if (maybeMax.isPresent())
+		}
+		
+		// get size of component
+		int width = getWidth();
+		int height = getHeight();
+		int maxX = width - 1;
+		int maxY = height - 1;
+		
+		// find maximum and minimum values of visible data
+		double maxValue = gagueParameters.getMaximim();
+		double minValue = gagueParameters.getMinimum();
+		
+		{
+			int position = width;
+			for (DataPoint dp : dataPoints)
 			{
-				maxValue = gagueParameters.getValue(maybeMax.get());
-			}
-			else
-			{
-				maxValue = gagueParameters.getMaximim();
+				double value = gagueParameters.getValue(dp);
+				if (value > maxValue) maxValue = value;
+				if (value < minValue) minValue = value;
+				position -= DATA_POINT_WIDTH;
+				if (position < Y_AXIS_LABEL_WIDTH) break;
 			}
 		}
 		
@@ -87,10 +99,7 @@ public class Histogram extends Canvas implements DataReceiver
 		Graphics2D g = (Graphics2D) bufferStrategy.getDrawGraphics();
 		
 		// actually perform drawing
-		int width = getWidth();
-		int height = getHeight();
-		int maxX = width - 1;
-		int maxY = height - 1;
+		
 		
 		/* More recent points are shown at the right. Each tick the graph is effectively shifted
 		 * one unit to the left.
@@ -117,13 +126,13 @@ public class Histogram extends Canvas implements DataReceiver
 		if (iter.hasNext())
 		{
 			dpNewer = iter.next();
-			yNewer = getYCoordinate(dpNewer, maxY, maxValue);
-			while (iter.hasNext() && xOlder >= 0)
+			yNewer = getYCoordinate(dpNewer, maxY, minValue, maxValue);
+			while (iter.hasNext() && xOlder >= Y_AXIS_LABEL_WIDTH)
 			{
 				dpNewer = iter.next();
 				yOldest = yOlder;
 				yOlder = yNewer;
-				yNewer = getYCoordinate(dpNewer, maxY, maxValue);
+				yNewer = getYCoordinate(dpNewer, maxY, minValue, maxValue);
 				
 				poly.addPoint(xNewer, height);
 				poly.addPoint(xOlder + 1, height);
@@ -165,7 +174,8 @@ public class Histogram extends Canvas implements DataReceiver
 			}
 		}
 		
-		
+		g.setColor(Color.GREEN);
+		g.drawLine(Y_AXIS_LABEL_WIDTH - 1, 0, Y_AXIS_LABEL_WIDTH - 1, maxY);
 		
 		
 		
@@ -191,10 +201,9 @@ public class Histogram extends Canvas implements DataReceiver
 		repaint();
 	}
 	
-	private int getYCoordinate(DataPoint dp, int maxY, double maxValue)
+	private int getYCoordinate(DataPoint dp, int maxY, double minValue, double maxValue)
 	{
 		double value = gagueParameters.getValue(dp);
-		double minValue = gagueParameters.getMinimum();
 		double range = maxValue - minValue;
 		double normalizedValue = (value - minValue) / range;
 		int yCoord = maxY - ((int) (normalizedValue * maxY));
