@@ -25,7 +25,10 @@ public class Histogram extends Canvas implements DataReceiver
 	
 	private final static int DATA_POINT_WIDTH = 25;
 	
-	private final static int Y_AXIS_LABEL_WIDTH = 100;
+	private final static int Y_AXIS_LABEL_WIDTH = 100; // width of y-axis's reserved drawing area
+	private final static int Y_AXIS_WIDTH = 2; // width of y-axis
+	private final static int Y_AXIS_TICK_WIDTH = 5; // width of y-axis tickmarks
+	private final static int Y_AXIS_TICK_X_COORD = Y_AXIS_LABEL_WIDTH - Y_AXIS_TICK_WIDTH - Y_AXIS_WIDTH;
 	
 	// I assume this value cannot change
 	private final static int MAX_DATA_POINTS = Toolkit.getDefaultToolkit().getScreenSize().width;
@@ -174,10 +177,26 @@ public class Histogram extends Canvas implements DataReceiver
 			}
 		}
 		
-		g.setColor(Color.GREEN);
-		g.drawLine(Y_AXIS_LABEL_WIDTH - 1, 0, Y_AXIS_LABEL_WIDTH - 1, maxY);
+		g.clearRect(0, 0, Y_AXIS_LABEL_WIDTH, height);
 		
+		g.setColor(Color.BLACK);
 		
+		g.fillRect(Y_AXIS_LABEL_WIDTH - Y_AXIS_WIDTH, 0, Y_AXIS_WIDTH, height);
+		
+		//g.drawLine(Y_AXIS_LABEL_WIDTH - 1, 0, Y_AXIS_LABEL_WIDTH - 1, maxY);
+		
+		int y0 = getYCoordinate(0, maxY, minValue, maxValue);
+		int yMin = getYCoordinate(minValue, maxY, minValue, maxValue);
+		
+		g.setColor(Color.BLACK);
+		
+		g.fillRect(Y_AXIS_TICK_X_COORD, 0,                       Y_AXIS_TICK_WIDTH, Y_AXIS_WIDTH);
+		g.fillRect(Y_AXIS_TICK_X_COORD, y0 - Y_AXIS_WIDTH / 2,   Y_AXIS_TICK_WIDTH, Y_AXIS_WIDTH);
+		g.fillRect(Y_AXIS_TICK_X_COORD, yMin - Y_AXIS_WIDTH + 1, Y_AXIS_TICK_WIDTH, Y_AXIS_WIDTH);
+		
+//		g.drawLine(Y_AXIS_LABEL_WIDTH - 6, 0,    Y_AXIS_LABEL_WIDTH - 1, 0);
+//		g.drawLine(Y_AXIS_LABEL_WIDTH - 6, y0,   Y_AXIS_LABEL_WIDTH - 1, y0);
+//		g.drawLine(Y_AXIS_LABEL_WIDTH - 6, yMin, Y_AXIS_LABEL_WIDTH - 1, yMin);
 		
 		
 //		g.setColor(Color.RED);
@@ -203,7 +222,11 @@ public class Histogram extends Canvas implements DataReceiver
 	
 	private int getYCoordinate(DataPoint dp, int maxY, double minValue, double maxValue)
 	{
-		double value = gagueParameters.getValue(dp);
+		return getYCoordinate(gagueParameters.getValue(dp), maxY, minValue, maxValue);
+	}
+	
+	private int getYCoordinate(double value, int maxY, double minValue, double maxValue)
+	{
 		double range = maxValue - minValue;
 		double normalizedValue = (value - minValue) / range;
 		int yCoord = maxY - ((int) (normalizedValue * maxY));
