@@ -33,7 +33,7 @@ public class Driver
 	private static final Font STRIP_LABEL_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 50);
 	private static final Font GAUGE_LABEL_FONT = Assets.getFont7seg().deriveFont(50f);
 	private static final Dimension MINIMUM_FRAME_SIZE = new Dimension(300, 500);
-	private Rectangle windowBounds = new Rectangle(100, 100, 640, 640);
+	private Rectangle windowBounds = new Rectangle(100, 100, 1024, 640);
 	
 	public static final String VERSION_NUMBER = "0.0.0";
 	public static final String APPLICATION_NAME = "Electric Vehicle Demonstrator";
