@@ -35,13 +35,14 @@ public class Histogram extends Canvas implements DataReceiver
 	
 	private LinkedList<DataPoint> dataPoints = new LinkedList<>();
 	private Queue<DataPoint> newDataQueue = new ConcurrentLinkedQueue<>();
-	private GaugeParameters gagueParameters;
+	private GaugeParameters gaugeParameters;
+	private Color dataColor;
 	
 	
-	
-	public Histogram(GaugeParameters gagueParameters)
+	public Histogram(GaugeParameters gaugeParameters)
 	{
-		this.gagueParameters = gagueParameters;
+		this.gaugeParameters = gaugeParameters;
+		dataColor = gaugeParameters.getColor();
 	}
 	
 	@Override
@@ -75,14 +76,14 @@ public class Histogram extends Canvas implements DataReceiver
 		int maxY = height - 1;
 		
 		// find maximum and minimum values of visible data
-		double maxValue = gagueParameters.getMaximim();
-		double minValue = gagueParameters.getMinimum();
+		double maxValue = gaugeParameters.getMaximum();
+		double minValue = gaugeParameters.getMinimum();
 		
 		{
 			int position = width;
 			for (DataPoint dp : dataPoints)
 			{
-				double value = gagueParameters.getValue(dp);
+				double value = gaugeParameters.getValue(dp);
 				if (value > maxValue) maxValue = value;
 				if (value < minValue) minValue = value;
 				position -= DATA_POINT_WIDTH;
@@ -143,7 +144,7 @@ public class Histogram extends Canvas implements DataReceiver
 				poly.addPoint(xNewer, yNewer);
 				
 				// first we draw the area below the trapezoid
-				g.setColor(Color.DARK_GRAY);
+				g.setColor(dataColor);
 				g.fillPolygon(poly);
 				poly.reset();
 				
@@ -222,7 +223,7 @@ public class Histogram extends Canvas implements DataReceiver
 	
 	private int getYCoordinate(DataPoint dp, int maxY, double minValue, double maxValue)
 	{
-		return getYCoordinate(gagueParameters.getValue(dp), maxY, minValue, maxValue);
+		return getYCoordinate(gaugeParameters.getValue(dp), maxY, minValue, maxValue);
 	}
 	
 	private int getYCoordinate(double value, int maxY, double minValue, double maxValue)

@@ -1,14 +1,16 @@
 package com.github.zkxs.evcar.gui;
 
+import java.awt.Color;
+
 import com.github.zkxs.evcar.data.DataPoint;
 
 public class GaugeParameters
 {	
 	// declare different types of gauges
 	public static final GaugeParameters
-		CURRENT_GAGUE_PARAMETERS = new GaugeParameters(0, 80, dp -> dp.getCurrent()),
-		VOLTAGE_GAGUE_PARAMETERS = new GaugeParameters(0, 72, dp -> dp.getVoltage()),
-		RPM_GAGUE_PARAMETERS     = new GaugeParameters(-500, 4500, dp -> dp.getRpm());
+		CURRENT_GAGUE_PARAMETERS = new GaugeParameters(0, 80, dp -> dp.getCurrent(),  new Color(0xFF6666)),
+		VOLTAGE_GAGUE_PARAMETERS = new GaugeParameters(0, 72, dp -> dp.getVoltage(),  new Color(0x66FF66)),
+		RPM_GAGUE_PARAMETERS     = new GaugeParameters(-500, 4500, dp -> dp.getRpm(), new Color(0x6666FF));
 	
 	/** Method by which value is gotten */
 	@FunctionalInterface
@@ -20,12 +22,14 @@ public class GaugeParameters
 	private double minimum;
 	private double maximum;
 	private ValueGetter valueGetter;
+	private Color color;
 	
-	private GaugeParameters(double minimum, double maximum, ValueGetter valueGetter)
+	private GaugeParameters(double minimum, double maximum, ValueGetter valueGetter, Color color)
 	{
 		this.minimum = minimum;
 		this.maximum = maximum;
 		this.valueGetter = valueGetter;
+		this.color = color;
 	}
 	
 	/**
@@ -39,7 +43,7 @@ public class GaugeParameters
 	/**
 	 * @return Expected maximum value
 	 */
-	public double getMaximim()
+	public double getMaximum()
 	{
 		return maximum;
 	}
@@ -52,5 +56,13 @@ public class GaugeParameters
 	public double getValue(DataPoint dp)
 	{
 		return valueGetter.getValue(dp);
+	}
+	
+	/**
+	 * @return A color you could use for the histogram
+	 */
+	public Color getColor()
+	{
+		return color;
 	}
 }
