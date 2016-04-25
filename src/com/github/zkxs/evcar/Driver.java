@@ -80,8 +80,8 @@ public class Driver
 				try
 				{
 					contentPane = new JPanel();
-					contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-					contentPane.setLayout(new GridLayout(0, 1));
+					contentPane.setBorder(new EmptyBorder(5, 0, 5, 0));
+					contentPane.setLayout(new GridLayout(0, 1, 0, 10));
 					
 					
 					for (GaugeParameters gp : stripTypes)
