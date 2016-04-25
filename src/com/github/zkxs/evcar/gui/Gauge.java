@@ -16,6 +16,7 @@ import com.github.zkxs.evcar.data.DataReceiver;
 public class Gauge extends Canvas implements DataReceiver
 {
 	private final static int EDGE_PADDING = 2;
+	private final static long serialVersionUID = 1L;
 	private double destinationValue;
 	private double currentValue;
 	private GaugeParameters gaugeParameters;
