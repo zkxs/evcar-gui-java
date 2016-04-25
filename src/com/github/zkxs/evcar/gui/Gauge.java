@@ -20,10 +20,13 @@ public class Gauge extends Canvas implements DataReceiver
 	private double destinationValue;
 	private double currentValue;
 	private GaugeParameters gaugeParameters;
+	private double needleSpeed;
 
 	public Gauge(GaugeParameters gaugeParameters)
 	{
 		this.gaugeParameters = gaugeParameters;
+		currentValue = gaugeParameters.getMinimum();
+		needleSpeed = (gaugeParameters.getMaximum() - gaugeParameters.getMinimum()) / 25;
 		setMinimumSize(new Dimension(200, 100));
 		setPreferredSize(new Dimension(200, 100));
 	}
@@ -114,7 +117,20 @@ public class Gauge extends Canvas implements DataReceiver
 	public void acceptDataPoint(DataPoint dp)
 	{
 		destinationValue = gaugeParameters.getValue(dp);
-		currentValue = gaugeParameters.getValue(dp);
+		
+		double distance = destinationValue - currentValue;
+		double distanceMag = Math.abs(distance);
+		double distanceDirection = Math.signum(distance);
+		
+		if (distanceMag > needleSpeed)
+		{
+			currentValue += needleSpeed * distanceDirection;
+		}
+		else
+		{
+			currentValue += distance / 2;
+		}
+		
 		if (currentValue > gaugeParameters.getMaximum()) currentValue = gaugeParameters.getMaximum();
 		if (currentValue < gaugeParameters.getMinimum()) currentValue = gaugeParameters.getMinimum();
 		repaint();
