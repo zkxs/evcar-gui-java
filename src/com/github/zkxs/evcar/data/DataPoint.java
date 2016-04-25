@@ -7,6 +7,13 @@ public class DataPoint
 	private double voltage;
 	private double rpm;
 	
+	public DataPoint(long time, double current, double voltage, double rpm)
+	{
+		this.time = time;
+		this.current = current;
+		this.voltage = voltage;
+		this.rpm = rpm;
+	}
 	
 	public long getTime()
 	{
