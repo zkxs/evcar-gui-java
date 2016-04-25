@@ -79,9 +79,6 @@ public class Gauge extends Canvas implements DataReceiver
 		// clear the whole canvas
 		g.clearRect(0, 0, width, height);
 		
-		g.setColor(Color.RED);
-		g.drawRect(0, 0, maxX, maxY);
-		
 		// actually perform drawing
 		g.setColor(Color.WHITE);
 		g.fillArc(arcX, arcY, arcDiameter, arcDiameter, 0, 180);
