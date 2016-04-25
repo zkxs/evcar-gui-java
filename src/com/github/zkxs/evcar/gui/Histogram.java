@@ -3,19 +3,21 @@ package com.github.zkxs.evcar.gui;
 import java.awt.BasicStroke;
 import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.Toolkit;
 import java.awt.image.BufferStrategy;
 import java.util.LinkedList;
 import java.util.ListIterator;
-import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import com.github.zkxs.evcar.Util;
 import com.github.zkxs.evcar.data.DataPoint;
 import com.github.zkxs.evcar.data.DataReceiver;
 
@@ -25,10 +27,13 @@ public class Histogram extends Canvas implements DataReceiver
 	
 	private final static int DATA_POINT_WIDTH = 25;
 	
-	private final static int Y_AXIS_LABEL_WIDTH = 100; // width of y-axis's reserved drawing area
+	private final static int Y_AXIS_LABEL_WIDTH = 75; // width of y-axis's reserved drawing area
 	private final static int Y_AXIS_WIDTH = 2; // width of y-axis
 	private final static int Y_AXIS_TICK_WIDTH = 5; // width of y-axis tickmarks
 	private final static int Y_AXIS_TICK_X_COORD = Y_AXIS_LABEL_WIDTH - Y_AXIS_TICK_WIDTH - Y_AXIS_WIDTH;
+	private final static int Y_AXIS_LABEL_RIGHT_BOUND = Y_AXIS_TICK_X_COORD - 3;
+	private final static Font Y_AXIS_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 20);
+	private final static boolean DRAW_Y_AXIS_LABEL_BOUNDING_BOXES = false;
 	
 	// I assume this value cannot change
 	private final static int MAX_DATA_POINTS = Toolkit.getDefaultToolkit().getScreenSize().width;
@@ -127,6 +132,10 @@ public class Histogram extends Canvas implements DataReceiver
 		// clear screen
 		g.clearRect(0, 0, width, height);
 		
+		/*------------------------------------------------------------------------------------------
+		 * Draw the histogram itself
+		 *----------------------------------------------------------------------------------------*/
+		
 		if (iter.hasNext())
 		{
 			dpNewer = iter.next();
@@ -178,33 +187,66 @@ public class Histogram extends Canvas implements DataReceiver
 			}
 		}
 		
+		/*------------------------------------------------------------------------------------------
+		 * Draw the Y-axis to the left of the histogram
+		 *----------------------------------------------------------------------------------------*/
+		
+		// clear any histogram pieces that overlap with the y-axis space
 		g.clearRect(0, 0, Y_AXIS_LABEL_WIDTH, height);
 		
+		// draw the axis itself
 		g.setColor(Color.BLACK);
-		
 		g.fillRect(Y_AXIS_LABEL_WIDTH - Y_AXIS_WIDTH, 0, Y_AXIS_WIDTH, height);
 		
-		//g.drawLine(Y_AXIS_LABEL_WIDTH - 1, 0, Y_AXIS_LABEL_WIDTH - 1, maxY);
-		
+		// calculate y coordinates of the center tick mark
 		int y0 = getYCoordinate(0, maxY, minValue, maxValue);
-		int yMin = getYCoordinate(minValue, maxY, minValue, maxValue);
 		
+		// draw the tick marks
 		g.setColor(Color.BLACK);
-		
 		g.fillRect(Y_AXIS_TICK_X_COORD, 0,                       Y_AXIS_TICK_WIDTH, Y_AXIS_WIDTH);
 		g.fillRect(Y_AXIS_TICK_X_COORD, y0 - Y_AXIS_WIDTH / 2,   Y_AXIS_TICK_WIDTH, Y_AXIS_WIDTH);
-		g.fillRect(Y_AXIS_TICK_X_COORD, yMin - Y_AXIS_WIDTH + 1, Y_AXIS_TICK_WIDTH, Y_AXIS_WIDTH);
+		g.fillRect(Y_AXIS_TICK_X_COORD, maxY - Y_AXIS_WIDTH + 1, Y_AXIS_TICK_WIDTH, Y_AXIS_WIDTH);
 		
-//		g.drawLine(Y_AXIS_LABEL_WIDTH - 6, 0,    Y_AXIS_LABEL_WIDTH - 1, 0);
-//		g.drawLine(Y_AXIS_LABEL_WIDTH - 6, y0,   Y_AXIS_LABEL_WIDTH - 1, y0);
-//		g.drawLine(Y_AXIS_LABEL_WIDTH - 6, yMin, Y_AXIS_LABEL_WIDTH - 1, yMin);
+		// draw the tick mark labels
+		String maxLabel = String.format("%.0f", maxValue);
+		String minLabel = String.format("%.0f", minValue);
+		String zeroLabel = "0";
 		
+		g.setFont(Y_AXIS_FONT);
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
 		
-//		g.setColor(Color.RED);
-//		g.fillRect(10, 10, width - 20, height - 20);
-//		
-//		g.setColor(Color.BLACK);
-//		g.drawRect(0, 0, width - 1, height - 1);
+		Rectangle maxBounds = Util.getStringBounds(g, maxLabel);
+		maxBounds.x = Y_AXIS_LABEL_RIGHT_BOUND - maxBounds.width;
+		maxBounds.y = 0;
+		
+		Rectangle minBounds = Util.getStringBounds(g, minLabel);
+		minBounds.x = Y_AXIS_LABEL_RIGHT_BOUND - minBounds.width;
+		minBounds.y = maxY - minBounds.height;
+		
+		Rectangle zeroBounds = Util.getStringBounds(g, zeroLabel);
+		zeroBounds.x = Y_AXIS_LABEL_RIGHT_BOUND - zeroBounds.width;
+		zeroBounds.y = Math.min(y0 - zeroBounds.height / 2, maxY - zeroBounds.height);
+		
+		g.drawString(maxLabel, maxBounds.x, maxBounds.y + maxBounds.height);
+		if (DRAW_Y_AXIS_LABEL_BOUNDING_BOXES) g.draw(maxBounds);
+		
+		// don't draw the min label if it is too close to the zero label
+		if (!zeroBounds.intersects(minBounds))
+		{
+			g.drawString(minLabel, minBounds.x, minBounds.y + minBounds.height);
+			if (DRAW_Y_AXIS_LABEL_BOUNDING_BOXES) g.draw(minBounds);
+		}
+		
+		g.drawString(zeroLabel, zeroBounds.x, zeroBounds.y + zeroBounds.height);
+		if (DRAW_Y_AXIS_LABEL_BOUNDING_BOXES) g.draw(zeroBounds);
+		
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+		g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
+		
+		/*------------------------------------------------------------------------------------------
+		 * Done with drawing
+		 *----------------------------------------------------------------------------------------*/
 		
 		// show the back buffer
 		g.dispose();
