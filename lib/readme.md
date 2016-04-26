@@ -1,0 +1,1 @@
+`libsocket-can-java.jar` needs to be placed here, as obtained from [here](https://github.com/entropia/libsocket-can-java/).
