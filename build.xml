@@ -23,23 +23,16 @@
 			<arg line="${args}"/>
 		</java>
 	</target>
-
-	<!--<target name="test">
-		<java fork="true" failonerror="true" classname="test.Test">
-			<sysproperty key="java.library.path" path="${lib.dir}:${lib.path}"/>
-			<classpath refid="master-classpath"/>
-		</java>
-	</target>-->
-    
-    <target name="init" description="Prepare directory structure for building">
-        <mkdir dir="${build.dir}"/>
-        <copy includeemptydirs="false" todir="${build.dir}">
-            <fileset dir="src">
-                <exclude name="**/*.launch"/> <!-- What's this? -->
-                <exclude name="**/*.java"/>
-            </fileset>
-        </copy>
-    </target>
+	
+	<target name="init" description="Prepare directory structure for building">
+		<mkdir dir="${build.dir}"/>
+		<copy includeemptydirs="false" todir="${build.dir}">
+			<fileset dir="src">
+				<exclude name="**/*.launch"/> <!-- What's this? -->
+				<exclude name="**/*.java"/>
+			</fileset>
+		</copy>
+	</target>
 	
 	<target name="build" depends="init" description="Compile source tree java files">
 		<javac destdir="${build.dir}" source="${source}" target="${target}" includeAntRuntime="false" compiler="modern" executable="javac" debug="true" debuglevel="${debuglevel}">
