@@ -80,12 +80,12 @@ public class Histogram extends Canvas implements DataReceiver
 					dataPoints.removeLast();
 				}
 			}
+			assert(dataPoints.size() <= MAX_DATA_POINTS) : "failed to destroy old data points";
 		}
 		
 		// get size of component
 		int width = getWidth();
 		int height = getHeight();
-		int maxX = width - 1;
 		int maxY = height - 1;
 		
 		// find maximum and minimum values of visible data
