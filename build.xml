@@ -1,33 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project basedir="." name="evcar-gui-java" default="build">
 	<property name="target" value="1.8"/>
-    <property name="source" value="1.8"/>
-    <property name="debuglevel" value="source,lines,vars"/>
-    
-    <property name="src.dir" value="src "/>
-	<property name="build.dir" value="bin" />
-	<property name="lib.dir" value="lib" />
-	<property name="lib.path" value="${java.library.path}" />
+	<property name="source" value="1.8"/>
+	<property name="debuglevel" value="source,lines,vars"/>
+	
+	<property name="src.dir" value="src"/>
+	<property name="build.dir" value="bin"/>
+	<property name="lib.dir" value="lib"/>
+	<property name="lib.path" value="${java.library.path}"/>
 	
 	<path id="master-classpath">
-		<pathelement path="${build.dir}" />
+		<pathelement path="${build.dir}"/>
 		<fileset dir="${lib.dir}">
-			 <include name="*.jar" />
+			 <include name="*.jar"/>
 		</fileset>
 	 </path>
 	
 	<target name="run">
 		<java fork="true" failonerror="true" classname="com.github.zkxs.evcar.Driver">
-			<sysproperty key="java.library.path" path="${lib.dir}:${lib.path}" />
-			<classpath refid="master-classpath" />
-			<arg line="${args}" />
+			<sysproperty key="java.library.path" path="${lib.dir}:${lib.path}"/>
+			<classpath refid="master-classpath"/>
+			<arg line="${args}"/>
 		</java>
 	</target>
 
 	<!--<target name="test">
 		<java fork="true" failonerror="true" classname="test.Test">
-			<sysproperty key="java.library.path" path="${lib.dir}:${lib.path}" />
-			<classpath refid="master-classpath" />
+			<sysproperty key="java.library.path" path="${lib.dir}:${lib.path}"/>
+			<classpath refid="master-classpath"/>
 		</java>
 	</target>-->
     
@@ -42,20 +42,15 @@
     </target>
 	
 	<target name="build" depends="init" description="Compile source tree java files">
-		<echo message="${ant.project.name}: ${ant.file}"/>
 		<javac destdir="${build.dir}" source="${source}" target="${target}" includeAntRuntime="false" compiler="modern" executable="javac" debug="true" debuglevel="${debuglevel}">
-			<src path="${src.dir}" />
-			<classpath refid="master-classpath" />
+			<src path="${src.dir}"/>
+			<exclude name="**/package-info.java"/>
+			<classpath refid="master-classpath"/>
 			<compilerarg value="-Xbootclasspath/p:${toString:lib.dir}"/>
 		</javac>
 	 </target>
 	
 	<target name="clean" description="Clean output directories">
-		<!--<delete>
-			<fileset dir="${build.dir}">
-				<include name="**/*.class" />
-			</fileset>
-		</delete>-->
-        <delete dir="${build.dir}"/>
+		<delete dir="${build.dir}"/>
 	</target>
 </project>
