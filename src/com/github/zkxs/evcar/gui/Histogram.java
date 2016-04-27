@@ -26,15 +26,16 @@ public class Histogram extends Canvas implements DataReceiver
 	private static final long serialVersionUID = 1L;
 	
 	private final static int DATA_POINT_WIDTH = 2;
-	private final static int Y_AXIS_LABEL_WIDTH = 75; // width of y-axis's reserved drawing area
-	private final static int Y_AXIS_WIDTH = 2; // width of y-axis
-	private final static int Y_AXIS_TICK_WIDTH = 5; // width of y-axis tickmarks
-	private final static int Y_AXIS_TICK_X_COORD = Y_AXIS_LABEL_WIDTH - Y_AXIS_TICK_WIDTH - Y_AXIS_WIDTH;
+	private final static int Y_AXIS_AREA_WIDTH = 75; // width of y-axis's reserved drawing area
+	private final static int Y_AXIS_LINE_WIDTH = 2; // width of y-axis
+	private final static int Y_AXIS_TICK_LENGTH = 5; // width of y-axis tickmarks
+	private final static int Y_AXIS_TICK_X_COORD = Y_AXIS_AREA_WIDTH - Y_AXIS_TICK_LENGTH - Y_AXIS_LINE_WIDTH;
 	private final static int Y_AXIS_LABEL_RIGHT_BOUND = Y_AXIS_TICK_X_COORD - 3;
 	private final static Font Y_AXIS_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 20);
 	private final static boolean DRAW_Y_AXIS_LABEL_BOUNDING_BOXES = false;
 	private final static int LINE_WIDTH = 2;
 	private final static Stroke LINE_STROKE = new BasicStroke(LINE_WIDTH);
+	private final static Color BLACK_TRANSLUCENT = new Color(0f, 0f, 0f, 0.4f);
 	
 	// I assume this value cannot change
 	private final static int MAX_DATA_POINTS = Toolkit.getDefaultToolkit().getScreenSize().width / DATA_POINT_WIDTH;
@@ -102,7 +103,7 @@ public class Histogram extends Canvas implements DataReceiver
 				if (value > maxValue) maxValue = value;
 				if (value < minValue) minValue = value;
 				position -= DATA_POINT_WIDTH;
-				if (position < Y_AXIS_LABEL_WIDTH) break;
+				if (position < Y_AXIS_AREA_WIDTH) break;
 			}
 		}
 		
@@ -150,7 +151,7 @@ public class Histogram extends Canvas implements DataReceiver
 		{
 			dpNewer = iter.next();
 			yNewer = getYCoordinate(dpNewer, maxY, minValue, maxValue);
-			while (iter.hasNext() && xOlder >= Y_AXIS_LABEL_WIDTH)
+			while (iter.hasNext() && xOlder >= Y_AXIS_AREA_WIDTH)
 			{
 				dpNewer = iter.next();
 				yOldest = yOlder;
@@ -202,20 +203,23 @@ public class Histogram extends Canvas implements DataReceiver
 		 *----------------------------------------------------------------------------------------*/
 		
 		// clear any histogram pieces that overlap with the y-axis space
-		g.clearRect(0, 0, Y_AXIS_LABEL_WIDTH, height);
+		g.clearRect(0, 0, Y_AXIS_AREA_WIDTH, height);
 		
 		// draw the axis itself
 		g.setColor(Color.BLACK);
-		g.fillRect(Y_AXIS_LABEL_WIDTH - Y_AXIS_WIDTH, 0, Y_AXIS_WIDTH, height);
+		g.fillRect(Y_AXIS_AREA_WIDTH - Y_AXIS_LINE_WIDTH, 0, Y_AXIS_LINE_WIDTH, height);
 		
 		// calculate y coordinates of the center tick mark
 		int y0 = getYCoordinate(0, maxY, minValue, maxValue);
 		
 		// draw the tick marks
 		g.setColor(Color.BLACK);
-		g.fillRect(Y_AXIS_TICK_X_COORD, 0,                       Y_AXIS_TICK_WIDTH, Y_AXIS_WIDTH);
-		g.fillRect(Y_AXIS_TICK_X_COORD, y0 - Y_AXIS_WIDTH / 2,   Y_AXIS_TICK_WIDTH, Y_AXIS_WIDTH);
-		g.fillRect(Y_AXIS_TICK_X_COORD, maxY - Y_AXIS_WIDTH + 1, Y_AXIS_TICK_WIDTH, Y_AXIS_WIDTH);
+		g.fillRect(Y_AXIS_TICK_X_COORD, 0, Y_AXIS_TICK_LENGTH, Y_AXIS_LINE_WIDTH);
+		g.fillRect(Y_AXIS_TICK_X_COORD, y0 - Y_AXIS_LINE_WIDTH / 2, Y_AXIS_TICK_LENGTH, Y_AXIS_LINE_WIDTH);
+		g.setColor(BLACK_TRANSLUCENT);
+		g.fillRect(Y_AXIS_AREA_WIDTH, y0 - Y_AXIS_LINE_WIDTH / 2, width - Y_AXIS_AREA_WIDTH , Y_AXIS_LINE_WIDTH);
+		g.setColor(Color.BLACK);
+		g.fillRect(Y_AXIS_TICK_X_COORD, maxY - Y_AXIS_LINE_WIDTH + 1, Y_AXIS_TICK_LENGTH, Y_AXIS_LINE_WIDTH);
 		
 		// draw the tick mark labels
 		String maxLabel = String.format("%.0f", maxValue);
