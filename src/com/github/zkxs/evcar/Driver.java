@@ -48,7 +48,7 @@ public class Driver
 	private JFrame frame;
 	private JPanel contentPane;
 	private GraphicsDevice monitor;
-	private boolean isFullscreen = false;
+	private boolean isFullscreen = false; // this is also the default mode, so set it to true to start in fullscreen
 	private Point windowLocation;
 	
 	/**
