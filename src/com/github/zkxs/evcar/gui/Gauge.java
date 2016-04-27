@@ -4,18 +4,32 @@ import java.awt.BasicStroke;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.image.BufferStrategy;
 
+import com.github.zkxs.evcar.Util;
 import com.github.zkxs.evcar.data.DataPoint;
 import com.github.zkxs.evcar.data.DataReceiver;
 
 public class Gauge extends Canvas implements DataReceiver
 {
+	/**
+	 * Number of ticks you want, not counting one at zero which you just get.
+	 * So if you want a tick every pi/8 radians, make this 8.
+	 */
+	private final static int NUMBER_OF_TICKS = 8;
 	private final static int EDGE_PADDING = 2;
+	private final static Font LABEL_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 12);
+	private final static int LINE_WIDTH = 2;
+	private final static int TICK_LENGTH = 5;
+	private final static int LABEL_BUFFER = LINE_WIDTH * 2 + TICK_LENGTH; // distance labels are from edge of gauge
+	private final static Stroke LINE_STROKE = new BasicStroke(LINE_WIDTH);
+	
 	private final static long serialVersionUID = 1L;
 	private double destinationValue;
 	private double currentValue;
@@ -94,15 +108,32 @@ public class Gauge extends Canvas implements DataReceiver
 		g.setColor(Color.BLACK);
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); // enable anti-aliasing
 		Stroke oldStroke = g.getStroke();
-		g.setStroke(new BasicStroke(2));
+		g.setStroke(LINE_STROKE);
 		g.drawArc(arcX, arcY, arcDiameter, arcDiameter, 0, 180);
 		g.drawLine(arcX, arcY + arcRadius, arcX + arcDiameter, arcY + arcRadius);
 		
-		for (int i = 0; i <= 8; i++)
+		// draw the tick marks
+		for (int i = 1; i < NUMBER_OF_TICKS; i++)
 		{
-			drawLineRadial(g, centerX, centerY, arcRadius - 5, arcRadius, i * Math.PI / 8);
+			drawLineRadial(g, centerX, centerY, arcRadius - LABEL_BUFFER, arcRadius, i * Math.PI / NUMBER_OF_TICKS);
 		}
 		
+		// draw the labels
+		String minLabel = String.format("%.0f", gaugeParameters.getMinimum());
+		String midLabel = String.format("%.0f", (gaugeParameters.getMaximum() + gaugeParameters.getMinimum()) / 2);
+		String maxLabel = String.format("%.0f", gaugeParameters.getMaximum());
+		
+		int textY = arcY + arcRadius - LINE_WIDTH - 2;
+		Rectangle midBounds = Util.getStringBounds(g, midLabel);
+		Rectangle maxBounds = Util.getStringBounds(g, maxLabel);
+		
+		g.setFont(LABEL_FONT);
+		
+		g.drawString(minLabel, arcX + LABEL_BUFFER, textY);
+		g.drawString(midLabel, arcX + arcRadius - midBounds.width / 2 , arcY + midBounds.height + LABEL_BUFFER + 5);
+		g.drawString(maxLabel, arcX + arcDiameter - maxBounds.width - LABEL_BUFFER, textY);
+		
+		// draw the needle
 		g.setColor(Color.RED);
 		drawLineRadial(g, centerX, centerY, 0, arcRadius, getNeedleTheta(currentValue));
 		
