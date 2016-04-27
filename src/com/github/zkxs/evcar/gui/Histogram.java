@@ -33,6 +33,8 @@ public class Histogram extends Canvas implements DataReceiver
 	private final static int Y_AXIS_LABEL_RIGHT_BOUND = Y_AXIS_TICK_X_COORD - 3;
 	private final static Font Y_AXIS_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 20);
 	private final static boolean DRAW_Y_AXIS_LABEL_BOUNDING_BOXES = false;
+	private final static int LINE_WIDTH = 2;
+	private final static Stroke LINE_STROKE = new BasicStroke(LINE_WIDTH);
 	
 	// I assume this value cannot change
 	private final static int MAX_DATA_POINTS = Toolkit.getDefaultToolkit().getScreenSize().width / DATA_POINT_WIDTH;
@@ -171,7 +173,7 @@ public class Histogram extends Canvas implements DataReceiver
 					g.setColor(Color.BLACK);
 					g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); // enable anti-aliasing
 					Stroke oldStroke = g.getStroke();
-					g.setStroke(new BasicStroke(2));	
+					g.setStroke(LINE_STROKE);	
 					g.drawLine(xOldest, yOldest, xOlder, yOlder);
 					g.setStroke(oldStroke);
 					g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF); // disable anti-aliasing
@@ -188,7 +190,7 @@ public class Histogram extends Canvas implements DataReceiver
 				g.setColor(Color.BLACK);
 				g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); // enable anti-aliasing
 				Stroke oldStroke = g.getStroke();
-				g.setStroke(new BasicStroke(2));	
+				g.setStroke(LINE_STROKE);	
 				g.drawLine(xNewer + DATA_POINT_WIDTH, yNewer, xOlder + DATA_POINT_WIDTH, yOlder);
 				g.setStroke(oldStroke);
 				g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF); // disable anti-aliasing
