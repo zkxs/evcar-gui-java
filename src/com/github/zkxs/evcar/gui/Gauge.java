@@ -63,8 +63,6 @@ public class Gauge extends Canvas implements DataReceiver
 		// get size of component
 		int width = getWidth();
 		int height = getHeight();
-		int maxX = width - 1;
-		int maxY = height - 1;
 		
 		int arcDiameter, arcX, arcY, arcRadius;
 		
