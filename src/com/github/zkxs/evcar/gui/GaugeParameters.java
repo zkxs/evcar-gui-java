@@ -10,7 +10,8 @@ public class GaugeParameters
 	public static final GaugeParameters
 		CURRENT_GAGUE_PARAMETERS = new GaugeParameters("Current", "A", "%.1f", 0, 80, dp -> dp.getCurrent(),  new Color(0xFF6666)),
 		VOLTAGE_GAGUE_PARAMETERS = new GaugeParameters("Voltage", "V", "%.1f", 0, 72, dp -> dp.getVoltage(),  new Color(0x66FF66)),
-		RPM_GAGUE_PARAMETERS     = new GaugeParameters("RPM", "", "%.0f", -500, 4500, dp -> dp.getRpm(), new Color(0x6666FF));
+		RPM_GAGUE_PARAMETERS     = new GaugeParameters("RPM", "", "%.0f", -500, 4500, dp -> dp.getRpm(), new Color(0x6666FF)),
+		CURRENT_GAUGE_PARAMETERS = new GaugeParameters("Power", "W", "%.0f", -20, 200, dp -> dp.getCurrent() * dp.getVoltage(), new Color(0x3C3C3C));
 	
 	/** Method by which value is gotten */
 	@FunctionalInterface
